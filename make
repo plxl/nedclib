@@ -5,12 +5,21 @@ mkdir build
 build_os() {
   case "$1" in
     win32)
+        CC="gcc"
+        CXX="g++"
         CC_PREFIX="i686-w64-mingw32-"
         SO_EXTENSION=".dll"
         EXE_EXTENSION=".exe"
         CFLAGS="-static-libgcc"
         ;;
     linux)
+        CC="gcc"
+        CXX="g++"
+        ;;
+    mac)
+        CC="clang"
+        CXX="clang++"
+        CFLAGS="-L/opt/local/lib"
         ;;
     custom)
       ;;
@@ -29,13 +38,13 @@ build_os() {
   mkdir build/$1
   mkdir build/$1/obj
   for file in $(find src/lib | grep "\.cpp$"); do
-    ${CC_PREFIX}g++ $CFLAGS -flto -DNEDCLIB2_EXPORTS -c -g -fPIC -o build/$1/obj/$(basename $file).o -Wall -O2 -std=c++0x -I src/lib -I src/lib/rawbmp $file
+    ${CC_PREFIX}${CXX} $CFLAGS -flto -DNEDCLIB2_EXPORTS -c -g -fPIC -o build/$1/obj/$(basename $file).o -Wall -O2 -std=c++0x -I src/lib -I src/lib/rawbmp $file
   done
   ar rcs build/$1/nedclib2.a build/$1/obj/*
-  ${CC_PREFIX}g++ $LDFLAGS -flto -fPIC -o build/$1/nedclib2${SO_EXTENSION} -shared -Wall -O2 -std=c++0x build/$1/obj/*
+  ${CC_PREFIX}${CXX} $LDFLAGS -flto -fPIC -o build/$1/nedclib2${SO_EXTENSION} -shared -Wall -O2 -std=c++0x build/$1/obj/*
 
   for prog in nedcenc raw2bmp nedcmake nevpk; do
-    ${CC_PREFIX}g++ $CFLAGS -flto -O2 -Wall -o build/$1/${prog}${EXE_EXTENSION} -I src/lib src/$prog.cpp build/$1/nedclib2.a
+    ${CC_PREFIX}${CXX} $CFLAGS -flto -O2 -Wall -o build/$1/${prog}${EXE_EXTENSION} -I src/lib src/$prog.cpp build/$1/nedclib2.a
   done
 }
 

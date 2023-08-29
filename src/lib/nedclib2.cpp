@@ -1,5 +1,5 @@
 #include <stdio.h>
-#include <malloc.h>
+#include <stdlib.h>
 
 #include "nedclib2.h"
 #include "rawbin/rs.h"

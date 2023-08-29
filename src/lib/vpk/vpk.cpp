@@ -1,7 +1,6 @@
 #include <stdio.h>
 #include <stdarg.h>
 #include <stdlib.h>
-#include <malloc.h>
 #include <string.h>
 
 #include "nedclib2.h"

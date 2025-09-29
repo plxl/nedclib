@@ -28,6 +28,19 @@ jobs:
           cmake -S . -B build -G "MinGW Makefiles" -DCMAKE_BUILD_TYPE=Release
           cmake --build build -- -j 2
 
+      - name: Package artifacts (Windows)
+        run: |
+          New-Item -ItemType Directory -Force -Path release
+          Compress-Archive -Path 'build\*' -DestinationPath "release\${{ runner.os }}-nedclib-${{ github.sha }}.zip"
+        shell: powershell
+      
+      - name: Upload artifact (Windows)
+        uses: actions/upload-artifact@v4
+        with:
+          name: nedclib-windows-${{ github.sha }}
+          path: release/*.zip
+          retention-days: 7
+
   build-macos:
     name: macOS (clang)
     runs-on: macos-latest
@@ -39,6 +52,18 @@ jobs:
         run: |
           cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
           cmake --build build -- -j 2
+      - name: Package artifacts (macOS)
+        run: |
+          mkdir -p release
+          zip -r "release/${{ runner.os }}-nedclib-${{ github.sha }}.zip" build
+        shell: bash
+      
+      - name: Upload artifact (macOS)
+        uses: actions/upload-artifact@v4
+        with:
+          name: nedclib-macos-${{ github.sha }}
+          path: release/*.zip
+          retention-days: 7
 
   build-ubuntu:
     name: Ubuntu (gcc)
@@ -51,3 +76,16 @@ jobs:
         run: |
           cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Release
           cmake --build build -- -j 2
+
+      - name: Package artifacts (Ubuntu)
+        run: |
+          mkdir -p release
+          zip -r "release/${{ runner.os }}-nedclib-${{ github.sha }}.zip" build
+        shell: bash
+      
+      - name: Upload artifact (Ubuntu)
+        uses: actions/upload-artifact@v4
+        with:
+          name: nedclib-ubuntu-${{ github.sha }}
+          path: release/*.zip
+          retention-days: 7

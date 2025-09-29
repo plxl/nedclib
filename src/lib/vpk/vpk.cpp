@@ -5,7 +5,7 @@
 
 #include "nedclib2.h"
 
-NEDCLIB_API FILE *log;
+NEDCLIB_API FILE *nedclib_log;
 NEDCLIB_API int verbose=0;
 
 unsigned char *bitstore=NULL;
@@ -18,8 +18,8 @@ void log_only_write(const char* str, ...)
 	va_start(args,str);
 	vsnprintf(tmpstr,sizeof(tmpstr),str,args);
 	va_end(args);
-	if(log!=NULL)
-		fprintf(log,tmpstr);
+	if(nedclib_log!=NULL)
+		fprintf(nedclib_log, "%s", tmpstr);
 }
 
 NEDCLIB_API void log_write(const char* str, ...)
@@ -30,9 +30,9 @@ NEDCLIB_API void log_write(const char* str, ...)
 	vsnprintf(tmpstr,sizeof(tmpstr),str,args);
 	va_end(args);
 	if(verbose==1)
-		printf(tmpstr);
-	if(log!=NULL)
-		fprintf(log,tmpstr);
+		printf("%s", tmpstr);
+	if(nedclib_log!=NULL)
+		fprintf(nedclib_log, "%s", tmpstr);
 }
 
 struct tree_node {

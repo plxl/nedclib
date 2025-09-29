@@ -1,0 +1,53 @@
+name: CI - Build
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  build-windows-mingw:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup MSYS2
+        uses: msys2/setup-msys2@v2
+        with:
+          update: true
+          msystem: MINGW64
+          install: >
+            mingw-w64-x86_64-toolchain
+            mingw-w64-x86_64-cmake
+            mingw-w64-x86_64-ninja
+
+      - name: Configure & build (MinGW)
+        # <- use the msys2-provided shell helper
+        shell: msys2 {0}
+        run: |
+          export PATH="/c/msys64/mingw64/bin:$PATH"
+          cmake -S . -B build -G "MinGW Makefiles" -DCMAKE_BUILD_TYPE=Release
+          cmake --build build -- -j 2
+
+  build-macos:
+    name: macOS (clang)
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install CMake
+        run: brew install cmake
+      - name: Configure & build
+        run: |
+          cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
+          cmake --build build -- -j 2
+
+  build-ubuntu:
+    name: Ubuntu (gcc)
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install deps
+        run: sudo apt update && sudo apt install -y build-essential cmake git ninja-build
+      - name: Configure & build
+        run: |
+          cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Release
+          cmake --build build -- -j 2

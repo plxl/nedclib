@@ -14,5 +14,11 @@ if(BUILD_TOOLS)
   foreach(EXE nedcenc nedcmake nevpk raw2bmp)
     add_executable(${EXE} src/${EXE}.cpp)
     target_link_libraries(${EXE} PRIVATE nedclib)
+
+    # Ensure the binary looks for dylib in the same directory
+    set_target_properties(${EXE} PROPERTIES
+      INSTALL_RPATH "@executable_path"
+      BUILD_WITH_INSTALL_RPATH TRUE
+    )
   endforeach()
 endif()

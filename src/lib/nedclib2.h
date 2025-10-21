@@ -22,6 +22,10 @@
   #endif
 #endif
 
+#ifdef _MSC_VER
+	#define strcasecmp _stricmp
+#endif
+
 //#define GENERIC_DOTCODE 1
 
 #include <stdio.h>
